@@ -1,0 +1,24 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /ai-model-hub
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ai-model-hub
+  jackson:
+    default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 120MB
+      max-request-size: 120MB
+  mvc:
+    async:
+      request-timeout: 30000
+
+mybatis:
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true

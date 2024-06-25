@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ai_writing?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+management:
+  server:
+    port: 12306
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: /java
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+models:
+  chatgpt:
+    chat-url: https://api.openai.com/v1/chat/completions
+    chat-key: ${CHATGPT_KEY}
+  doubao:
+    chat-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+    chat-key: ${DOUBAO_KEY}
