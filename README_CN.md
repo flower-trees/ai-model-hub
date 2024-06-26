@@ -8,6 +8,7 @@
 - DouBao
 - QWen (建设中)
 - Claude3 (建设中)
+- Gemini (建设中)
 - KIMI (建设中)
 - 百川 (建设中)
 - 智谱 (建设中)
