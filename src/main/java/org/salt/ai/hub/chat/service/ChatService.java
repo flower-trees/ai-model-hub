@@ -14,6 +14,7 @@
 
 package org.salt.ai.hub.chat.service;
 
+import org.salt.ai.hub.ai.models.aliyun.AliyunActuator;
 import org.salt.ai.hub.ai.models.chatgpt.ChatGPTActuator;
 import org.salt.ai.hub.ai.models.doubao.DoubaoActuator;
 import org.salt.ai.hub.ai.models.enums.VendorType;
@@ -37,6 +38,9 @@ public class ChatService {
     DoubaoActuator doubaoActuator;
 
     @Autowired
+    AliyunActuator aliyunActuator;
+
+    @Autowired
     SimpleContextProcess simpleContextProcess;
 
     public void hub(AiChatRequest aiChatRequest, Consumer<AiChatResponse> responder) {
@@ -50,6 +54,8 @@ public class ChatService {
             chatGPTActuator.pursue(aiChatDto, responder, simpleContextProcess::executeDown);
         } else if (aiChatDto.getVendor().equals(VendorType.DOUBAO.getCode())) {
             doubaoActuator.pursue(aiChatDto, responder, simpleContextProcess::executeDown);
+        } else if (aiChatDto.getVendor().equals(VendorType.ALIYUN.getCode())) {
+            aliyunActuator.pursue(aiChatDto, responder, simpleContextProcess::executeDown);
         }
     }
 }

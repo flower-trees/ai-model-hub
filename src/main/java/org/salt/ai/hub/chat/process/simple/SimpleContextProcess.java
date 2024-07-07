@@ -42,6 +42,9 @@ public class SimpleContextProcess implements ChatProcess<String> {
         } else if (aiChatDto.getAgent().equals("2")) {
             aiChatDto.setVendor(VendorType.DOUBAO.getCode());
             aiChatDto.setModel("ep-20240611104225-2d4ww");
+        } else if (aiChatDto.getAgent().equals("3")) {
+            aiChatDto.setVendor(VendorType.ALIYUN.getCode());
+            aiChatDto.setModel("qwen-max");
         }
 
         AiChatDto.Message message = new AiChatDto.Message();

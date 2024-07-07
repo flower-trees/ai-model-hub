@@ -21,7 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 public enum VendorType {
 
     CHATGPT("chatgpt"),
-    DOUBAO("doubao")
+    DOUBAO("doubao"),
+    ALIYUN("aliyun"),
     ;
 
     private final String code;

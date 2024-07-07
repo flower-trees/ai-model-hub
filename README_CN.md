@@ -2,18 +2,6 @@
 
 一个模型应用开发集成框架，对接各大模型厂商OPEN API，将数据转换成统一格式，可进行模型快速切换、prompt构建、知识库调用、数据存储等功能，加速模型应用的落地开发。
 
-## 当前支持模型
-
-- ChatGPT
-- DouBao
-- QWen (建设中)
-- Claude3 (建设中)
-- Gemini (建设中)
-- KIMI (建设中)
-- 百川 (建设中)
-- 智谱 (建设中)
-- 文心一言 (建设中)
-
 ## 快速开始
 
 ### 环境要求
@@ -52,4 +40,11 @@ curl --location 'http://127.0.0.1:8080/ai-model-hub/ai/stream/chat' \
 }'
 ```
 
+## 功能列表
+
+### 当前支持模型
+
+- ChatGPT
+- DouBao
+- QWen(aliyun)
 

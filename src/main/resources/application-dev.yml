@@ -29,3 +29,6 @@ models:
   doubao:
     chat-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
     chat-key: ${DOUBAO_KEY}
+  aliyun:
+    chat-url: https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation
+    chat-key: ${ALIYUN_KEY}

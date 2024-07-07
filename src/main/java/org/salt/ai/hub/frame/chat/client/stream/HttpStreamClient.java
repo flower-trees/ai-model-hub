@@ -159,9 +159,13 @@ public class HttpStreamClient implements InitializingBean {
                     BufferedSource source = responseBody.source();
                     while (!source.exhausted()) {
                         String lineComplete = source.readUtf8LineStrict();
-                        if (StringUtils.isNotBlank(lineComplete.trim()) && lineComplete.startsWith("data: ")) {
+                        if (StringUtils.isNotBlank(lineComplete.trim()) && lineComplete.startsWith("data:")) {
                             log.info("http stream call read, data:{}", lineComplete);
-                            String content = lineComplete.substring("data: ".length());
+                            int index = "data:".length();
+                            if (lineComplete.startsWith("data: ")) {
+                                index += 1;
+                            }
+                            String content = lineComplete.substring(index);
                             if (!StringUtils.equalsIgnoreCase(content, "[DONE]")) {
                                 strategyList.forEach(strategy -> strategy.onMessage(content));
                                 pause();
