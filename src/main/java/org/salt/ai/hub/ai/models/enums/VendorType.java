@@ -23,6 +23,7 @@ public enum VendorType {
     CHATGPT("chatgpt"),
     DOUBAO("doubao"),
     ALIYUN("aliyun"),
+    MOONSHOT("moonshot"),
     ;
 
     private final String code;

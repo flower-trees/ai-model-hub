@@ -32,3 +32,6 @@ models:
   aliyun:
     chat-url: https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation
     chat-key: ${ALIYUN_KEY}
+  moonshot:
+    chat-url: https://api.moonshot.cn/v1/chat/completions
+    chat-key: ${MOONSHOT_KEY}
