@@ -40,6 +40,10 @@ curl --location 'http://127.0.0.1:8080/ai-model-hub/ai/stream/chat' \
 }'
 ```
 
+## 架构图
+
+![image](https://github.com/Jindou2018/image/raw/master/ai-model-hub/%E6%9E%B6%E6%9E%842024-07-08-15-04-31.png)
+
 ## 功能列表
 
 ### 当前支持模型
