@@ -12,10 +12,10 @@
  * limitations under the License.
  */
 
-package org.salt.ai.hub.chat.process.simple;
+package org.salt.ai.hub.chat.process;
 
 import org.salt.ai.hub.ai.models.enums.VendorType;
-import org.salt.ai.hub.chat.process.ChatProcess;
+import org.salt.ai.hub.frame.chat.process.ChatProcess;
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.enums.RoleType;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;

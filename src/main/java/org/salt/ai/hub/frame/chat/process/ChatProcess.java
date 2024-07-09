@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.salt.ai.hub.chat.process;
+package org.salt.ai.hub.frame.chat.process;
 
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
