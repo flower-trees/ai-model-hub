@@ -51,3 +51,4 @@ curl --location 'http://127.0.0.1:8080/ai-model-hub/ai/stream/chat' \
 - ChatGPT
 - DouBao
 - QWen (aliyun)
+- Moonshot
