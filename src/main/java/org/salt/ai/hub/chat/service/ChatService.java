@@ -19,6 +19,7 @@ import org.salt.ai.hub.ai.models.chatgpt.ChatGPTActuator;
 import org.salt.ai.hub.ai.models.doubao.DoubaoActuator;
 import org.salt.ai.hub.ai.models.enums.VendorType;
 import org.salt.ai.hub.ai.models.moonshot.MoonshotActuator;
+import org.salt.ai.hub.ai.models.ollama.OllamaActuator;
 import org.salt.ai.hub.chat.process.SimpleContextProcess;
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
@@ -45,6 +46,9 @@ public class ChatService {
     MoonshotActuator moonshotActuator;
 
     @Autowired
+    OllamaActuator ollamaActuator;
+
+    @Autowired
     SimpleContextProcess simpleContextProcess;
 
     public void hub(AiChatRequest aiChatRequest, Consumer<AiChatResponse> responder) {
@@ -62,6 +66,8 @@ public class ChatService {
             aliyunActuator.pursue(aiChatDto, responder, simpleContextProcess::executeDown);
         } else if (aiChatDto.getVendor().equals(VendorType.MOONSHOT.getCode())) {
             moonshotActuator.pursue(aiChatDto, responder, simpleContextProcess::executeDown);
+        } else if (aiChatDto.getVendor().equals(VendorType.OLLAMA.getCode())) {
+            ollamaActuator.pursue(aiChatDto, responder, simpleContextProcess::executeDown);
         }
     }
 }

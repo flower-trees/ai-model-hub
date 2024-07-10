@@ -24,6 +24,7 @@ public enum VendorType {
     DOUBAO("doubao"),
     ALIYUN("aliyun"),
     MOONSHOT("moonshot"),
+    OLLAMA("ollama"),
     ;
 
     private final String code;

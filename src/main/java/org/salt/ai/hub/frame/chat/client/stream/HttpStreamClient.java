@@ -104,8 +104,8 @@ public class HttpStreamClient implements InitializingBean {
     private long readTimeout = 30000;
     private long writeTimeout = 30000;
     private TimeUnit connectTimeUnit = TimeUnit.SECONDS;
-    private String proxyHost = "127.0.0.1";
-    private int proxyPort = 1087;
+    private String proxyHost;
+    private int proxyPort;
 
     @Override
     public void afterPropertiesSet() {
@@ -141,7 +141,7 @@ public class HttpStreamClient implements InitializingBean {
         assert bodyJson != null;
         Request request = new Request.Builder()
                 .url(url)
-                .headers(Headers.of(headers))
+                //.headers(Headers.of(headers))
                 .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), bodyJson))
                 .build();
 
@@ -168,6 +168,14 @@ public class HttpStreamClient implements InitializingBean {
                             String content = lineComplete.substring(index);
                             if (!StringUtils.equalsIgnoreCase(content, "[DONE]")) {
                                 strategyList.forEach(strategy -> strategy.onMessage(content));
+                                pause();
+                            } else {
+                                strategyList.forEach(ListenerStrategy::onClosed);
+                            }
+                        } else if (StringUtils.isNotBlank(lineComplete.trim()) && lineComplete.startsWith("{")) {
+                            log.info("http stream call read, data:{}", lineComplete);
+                            if (!StringUtils.equalsIgnoreCase(lineComplete, "[DONE]")) {
+                                strategyList.forEach(strategy -> strategy.onMessage(lineComplete));
                                 pause();
                             } else {
                                 strategyList.forEach(ListenerStrategy::onClosed);
