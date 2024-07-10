@@ -145,4 +145,5 @@ ai-model-hub/
 - DouBao
 - QWen(aliyun)
 - Moonshot
+- Ollama
 
