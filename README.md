@@ -23,6 +23,11 @@ Main libraries and frameworks used in the project:
 - Spring Boot 3.2.6
 - MySQL Connector 8.0.33
 
+#### Dependency System
+
+- MySQL 8.0.27+
+- Redis 6.2.6+
+
 #### Environment Variables
 
 - export CHATGPT_KEY=your_chatgpt_key

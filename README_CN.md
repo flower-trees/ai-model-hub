@@ -23,6 +23,11 @@
 - Spring Boot 3.2.6
 - MySQL Connector 8.0.33
 
+#### 依赖系统
+
+- MySQL 8.0.27+
+- Redis 6.2.6+
+
 #### 环境变量
 
 - export CHATGPT_KEY=your_chatgpt_key
