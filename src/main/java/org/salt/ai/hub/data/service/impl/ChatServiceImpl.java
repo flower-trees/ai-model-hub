@@ -12,27 +12,23 @@
  * limitations under the License.
  */
 
-package org.salt.ai.hub.data.controller;
+package org.salt.ai.hub.data.service.impl;
 
+import org.salt.ai.hub.data.mapper.ChatMapper;
 import org.salt.ai.hub.data.service.ChatService;
 import org.salt.ai.hub.data.vo.ChatVo;
+import org.salt.ai.hub.frame.utils.ConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.stereotype.Service;
 
-@Controller
-@RequestMapping("/chat")
-public class ChatController {
+@Service
+public class ChatServiceImpl implements ChatService {
 
     @Autowired
-    ChatService chatService;
+    ChatMapper chatMapper;
 
-    @GetMapping("/{id}")
-    @ResponseBody
-    public ChatVo load(@PathVariable String id) {
-        return chatService.load(id);
+    @Override
+    public ChatVo load(String id) {
+        return ConvertUtil.convert(chatMapper.selectById(id), ChatVo.class);
     }
 }

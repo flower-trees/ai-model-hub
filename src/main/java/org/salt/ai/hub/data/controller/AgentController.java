@@ -14,8 +14,8 @@
 
 package org.salt.ai.hub.data.controller;
 
-import org.salt.ai.hub.data.service.ChatService;
-import org.salt.ai.hub.data.vo.ChatVo;
+import org.salt.ai.hub.data.service.AgentService;
+import org.salt.ai.hub.data.vo.AgentVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,15 +24,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/chat")
-public class ChatController {
+@RequestMapping("/agent")
+public class AgentController {
 
     @Autowired
-    ChatService chatService;
+    AgentService agentService;
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ChatVo load(@PathVariable String id) {
-        return chatService.load(id);
+    public AgentVo load(@PathVariable String id) {
+        return agentService.load(id);
     }
 }

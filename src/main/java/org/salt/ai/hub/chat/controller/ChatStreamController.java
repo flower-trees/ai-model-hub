@@ -15,7 +15,7 @@
 package org.salt.ai.hub.chat.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.salt.ai.hub.chat.service.ChatService;
+import org.salt.ai.hub.chat.service.ChatHubService;
 import org.salt.ai.hub.frame.chat.front.stream.StreamResponse;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter
 public class ChatStreamController {
 
     @Autowired
-    private ChatService chatService;
+    private ChatHubService chatHubService;
 
     @PostMapping(value = "/chat", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -45,7 +45,7 @@ public class ChatStreamController {
         ResponseBodyEmitter emitter = new ResponseBodyEmitter(300000L);
 
         try {
-            chatService.hub(aiChatRequest, aiChatResponse -> {
+            chatHubService.hub(aiChatRequest, aiChatResponse -> {
                 StreamResponse.responder(aiChatRequest, aiChatResponse, emitter);
             });
         } catch (Exception e) {
