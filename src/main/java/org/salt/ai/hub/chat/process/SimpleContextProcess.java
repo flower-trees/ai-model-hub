@@ -14,11 +14,13 @@
 
 package org.salt.ai.hub.chat.process;
 
+import org.apache.commons.lang3.StringUtils;
 import org.salt.ai.hub.ai.models.enums.VendorType;
 import org.salt.ai.hub.data.service.AgentService;
 import org.salt.ai.hub.data.service.ChatHisService;
 import org.salt.ai.hub.data.service.ChatService;
 import org.salt.ai.hub.data.service.SessionService;
+import org.salt.ai.hub.data.vo.AgentVo;
 import org.salt.ai.hub.data.vo.ChatHisVo;
 import org.salt.ai.hub.data.vo.ChatVo;
 import org.salt.ai.hub.data.vo.SessionVo;
@@ -60,21 +62,18 @@ public class SimpleContextProcess implements ChatProcess<String> {
         aiChatDto.setSession(aiChatRequest.getSession());
         aiChatDto.setAgent(aiChatRequest.getAgent());
 
-        if (aiChatDto.getAgent().equals("1")) {
-            aiChatDto.setVendor(VendorType.CHATGPT.getCode());
-            aiChatDto.setModel("gpt-3.5-turbo");
-        } else if (aiChatDto.getAgent().equals("2")) {
-            aiChatDto.setVendor(VendorType.DOUBAO.getCode());
-            aiChatDto.setModel("ep-20240611104225-2d4ww");
-        } else if (aiChatDto.getAgent().equals("3")) {
-            aiChatDto.setVendor(VendorType.ALIYUN.getCode());
-            aiChatDto.setModel("qwen-max");
-        } else if (aiChatDto.getAgent().equals("4")) {
-            aiChatDto.setVendor(VendorType.MOONSHOT.getCode());
-            aiChatDto.setModel("moonshot-v1-8k");
-        } else if (aiChatDto.getAgent().equals("5")) {
-            aiChatDto.setVendor(VendorType.OLLAMA.getCode());
-            aiChatDto.setModel("llama3:8b");
+        //Get the model manufacturer and model name, default chatgpt
+        aiChatDto.setVendor(VendorType.CHATGPT.getCode());
+        aiChatDto.setModel("gpt-3.5-turbo");
+        if (StringUtils.isNotBlank(aiChatDto.getAgent())) {
+            AgentVo agentVo = agentService.load(aiChatDto.getAgent());
+            if (agentVo != null && StringUtils.isNotBlank(agentVo.getConfigs())) {
+                AgentVo.Configs configs = JsonUtil.fromJson(agentVo.getConfigs(), AgentVo.Configs.class);
+                if (configs != null) {
+                    aiChatDto.setVendor(configs.getVendor());
+                    aiChatDto.setModel(configs.getModel());
+                }
+            }
         }
 
         AiChatDto.Message message = new AiChatDto.Message();
