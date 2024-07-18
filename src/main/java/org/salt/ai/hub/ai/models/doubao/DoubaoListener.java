@@ -17,8 +17,10 @@ package org.salt.ai.hub.ai.models.doubao;
 import org.jetbrains.annotations.NotNull;
 import org.salt.ai.hub.ai.models.doubao.dto.DoubaoResponse;
 import org.salt.ai.hub.ai.models.enums.VendorType;
+import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.enums.AiChatCode;
 import org.salt.ai.hub.frame.chat.structs.enums.MessageType;
+import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatResponse;
 import org.salt.ai.hub.frame.chat.model.DoListener;
 import org.salt.ai.hub.frame.utils.JsonUtil;
@@ -26,16 +28,17 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DoubaoListener extends DoListener {
 
-    public DoubaoListener(Consumer<AiChatResponse> responder, Consumer<AiChatResponse> callback) {
-        super(responder, callback);
+    public DoubaoListener(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, BiConsumer<AiChatDto, AiChatResponse> callback) {
+        super(aiChatDto, responder, callback);
     }
 
     @Override
-    public void onMessage(String msg) {
+    protected AiChatResponse convertMsg(String msg) {
         DoubaoResponse response = JsonUtil.fromJson(msg, DoubaoResponse.class);
         if (response != null) {
             AiChatResponse aiChatResponse = new AiChatResponse();
@@ -47,8 +50,9 @@ public class DoubaoListener extends DoListener {
 
             aiChatResponse.setCode(AiChatCode.MESSAGE.getCode());
             aiChatResponse.setMessage(AiChatCode.MESSAGE.getMessage());
-            responder.accept(aiChatResponse);
+            return aiChatResponse;
         }
+        return null;
     }
 
     private static @NotNull List<AiChatResponse.Message> getMessages(DoubaoResponse response) {

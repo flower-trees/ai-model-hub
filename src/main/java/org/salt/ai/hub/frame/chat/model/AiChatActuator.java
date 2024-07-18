@@ -17,8 +17,9 @@ package org.salt.ai.hub.frame.chat.model;
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatResponse;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface AiChatActuator {
-    void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, Consumer<AiChatResponse> callback);
+    void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, BiConsumer<AiChatDto, AiChatResponse> callback);
 }

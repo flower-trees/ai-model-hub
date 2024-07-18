@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.salt.ai.hub.frame.user.UserUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -28,7 +29,7 @@ public class AgentVo {
     @TableId(type = IdType.AUTO)
     private Long id;
     private String agentId;
-    private Long userId;
+    private Long userId = UserUtil.getUserId();
 
     private String name;
     private String details;

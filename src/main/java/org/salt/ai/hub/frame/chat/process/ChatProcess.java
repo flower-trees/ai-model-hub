@@ -21,5 +21,5 @@ import org.salt.ai.hub.frame.chat.structs.vo.AiChatResponse;
 public interface ChatProcess<T> {
 
     AiChatDto executeUp(AiChatRequest aiChatRequest);
-    void executeDown(AiChatResponse aiChatResponse);
+    void executeDown(AiChatDto aiChatDto, AiChatResponse aiChatResponse);
 }

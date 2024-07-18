@@ -18,4 +18,5 @@ import org.salt.ai.hub.data.vo.SessionVo;
 
 public interface SessionService {
     SessionVo load(String id);
+    void create(SessionVo sessionVo);
 }

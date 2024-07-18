@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class MoonshotActuator implements AiChatActuator {
     HttpStreamClient commonHttpClient;
 
     @Override
-    public void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, Consumer<AiChatResponse> callback) {
+    public void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, BiConsumer<AiChatDto, AiChatResponse> callback) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -51,7 +52,7 @@ public class MoonshotActuator implements AiChatActuator {
 
         MoonshotRequest request = convert(aiChatDto);
 
-        commonHttpClient.call(chatUrl, JsonUtil.toJson(request), headers, List.of(new MoonshotListener(responder, callback)));
+        commonHttpClient.call(chatUrl, JsonUtil.toJson(request), headers, List.of(new MoonshotListener(aiChatDto, responder, callback)));
     }
 
     public static MoonshotRequest convert(AiChatDto aiChatDto) {

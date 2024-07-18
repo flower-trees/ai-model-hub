@@ -18,4 +18,6 @@ import org.salt.ai.hub.data.vo.ChatVo;
 
 public interface ChatService {
     ChatVo load(String id);
+    void create(ChatVo chatVo);
+    void update(ChatVo chatVo);
 }

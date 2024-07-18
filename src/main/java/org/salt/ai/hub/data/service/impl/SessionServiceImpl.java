@@ -14,7 +14,11 @@
 
 package org.salt.ai.hub.data.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.salt.ai.hub.data.mapper.SessionMapper;
+import org.salt.ai.hub.data.po.ChatInfo;
+import org.salt.ai.hub.data.po.SessionInfo;
 import org.salt.ai.hub.data.service.SessionService;
 import org.salt.ai.hub.data.vo.SessionVo;
 import org.salt.ai.hub.frame.utils.ConvertUtil;
@@ -29,6 +33,14 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public SessionVo load(String id) {
-        return ConvertUtil.convert(sessionMapper.selectById(id), SessionVo.class);
+        LambdaQueryWrapper<SessionInfo> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(SessionInfo::getSessionId, id);
+        return ConvertUtil.convert(sessionMapper.selectOne(wrapper, false), SessionVo.class);
+    }
+
+    @Override
+    public void create(SessionVo sessionVo) {
+        SessionInfo sessionInfo = ConvertUtil.convert(sessionVo, SessionInfo.class);
+        sessionMapper.insert(sessionInfo);
     }
 }

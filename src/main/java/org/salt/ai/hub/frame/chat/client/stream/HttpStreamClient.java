@@ -141,7 +141,7 @@ public class HttpStreamClient implements InitializingBean {
         assert bodyJson != null;
         Request request = new Request.Builder()
                 .url(url)
-                //.headers(Headers.of(headers))
+                .headers(Headers.of(headers))
                 .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), bodyJson))
                 .build();
 

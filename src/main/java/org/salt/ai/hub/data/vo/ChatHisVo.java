@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.salt.ai.hub.frame.user.UserUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -27,11 +28,10 @@ public class ChatHisVo {
 
     @TableId(type = IdType.AUTO)
     private Long id;
-    private String chatHisId;
-    private String chatId;
-    private Integer hisIndex;
     private String sessionId;
-    private Long userId;
+    private String chatId;
+    private String chatHisId;
+    private Long userId = UserUtil.getUserId();
 
     private String question;
     private String answer;

@@ -14,6 +14,7 @@
 
 package org.salt.ai.hub.chat.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.salt.ai.hub.ai.models.aliyun.AliyunActuator;
 import org.salt.ai.hub.ai.models.chatgpt.ChatGPTActuator;
 import org.salt.ai.hub.ai.models.doubao.DoubaoActuator;
@@ -53,8 +54,8 @@ public class ChatHubService {
 
     public void hub(AiChatRequest aiChatRequest, Consumer<AiChatResponse> responder) {
 
-        aiChatRequest.setId(IdsUtil.newChatId());
-        aiChatRequest.setSession(IdsUtil.newSessionId());
+        if (StringUtils.isBlank(aiChatRequest.getSession())) aiChatRequest.setSession(IdsUtil.newSessionId());
+        if (StringUtils.isBlank(aiChatRequest.getId())) aiChatRequest.setId(IdsUtil.newChatId());
 
         AiChatDto aiChatDto = simpleContextProcess.executeUp(aiChatRequest);
 

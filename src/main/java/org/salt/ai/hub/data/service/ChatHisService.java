@@ -18,4 +18,5 @@ import org.salt.ai.hub.data.vo.ChatHisVo;
 
 public interface ChatHisService {
     ChatHisVo load(String id);
+    void create(ChatHisVo chatHisVo);
 }

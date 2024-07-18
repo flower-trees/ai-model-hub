@@ -24,7 +24,6 @@ public class ChatHisInfo {
     private String sessionId;
     private String chatId;
     private String chatHisId;
-    private Integer hisIndex;
     private Long userId;
     private String question;
     private String answer;

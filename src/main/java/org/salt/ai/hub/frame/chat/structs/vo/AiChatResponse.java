@@ -38,6 +38,7 @@ public class AiChatResponse {
 
     private String id;
     private String session;
+    private String agent;
 
     private String vendor;
     @JsonProperty("vendor_id")

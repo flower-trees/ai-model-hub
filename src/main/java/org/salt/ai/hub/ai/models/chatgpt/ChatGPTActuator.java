@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class ChatGPTActuator implements AiChatActuator {
     HttpStreamClient chatGPTHttpClient;
 
     @Override
-    public void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, Consumer<AiChatResponse> callback) {
+    public void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, BiConsumer<AiChatDto, AiChatResponse> callback) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -51,7 +52,7 @@ public class ChatGPTActuator implements AiChatActuator {
 
         ChatGPTRequest chatGPTRequest = convert(aiChatDto);
 
-        chatGPTHttpClient.call(chatUrl, JsonUtil.toJson(chatGPTRequest), headers, List.of(new ChatGPTListener(responder, callback)));
+        chatGPTHttpClient.call(chatUrl, JsonUtil.toJson(chatGPTRequest), headers, List.of(new ChatGPTListener(aiChatDto, responder, callback)));
     }
 
     public static ChatGPTRequest convert(AiChatDto aiChatDto) {

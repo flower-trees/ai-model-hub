@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.salt.ai.hub.ai.models.enums.VendorType;
 import org.salt.ai.hub.ai.models.moonshot.dto.MoonshotResponse;
 import org.salt.ai.hub.frame.chat.model.DoListener;
+import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.enums.AiChatCode;
 import org.salt.ai.hub.frame.chat.structs.enums.MessageType;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatResponse;
@@ -26,16 +27,17 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class OllamaListener extends DoListener {
 
-    public OllamaListener(Consumer<AiChatResponse> responder, Consumer<AiChatResponse> callback) {
-        super(responder, callback);
+    public OllamaListener(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, BiConsumer<AiChatDto, AiChatResponse> callback) {
+        super(aiChatDto, responder, callback);
     }
 
     @Override
-    public void onMessage(String msg) {
+    protected AiChatResponse convertMsg(String msg) {
         MoonshotResponse response = JsonUtil.fromJson(msg, MoonshotResponse.class);
         if (response != null) {
             AiChatResponse aiChatResponse = new AiChatResponse();
@@ -47,8 +49,9 @@ public class OllamaListener extends DoListener {
 
             aiChatResponse.setCode(AiChatCode.MESSAGE.getCode());
             aiChatResponse.setMessage(AiChatCode.MESSAGE.getMessage());
-            responder.accept(aiChatResponse);
+            return aiChatResponse;
         }
+        return null;
     }
 
     private static @NotNull List<AiChatResponse.Message> getMessages(MoonshotResponse response) {

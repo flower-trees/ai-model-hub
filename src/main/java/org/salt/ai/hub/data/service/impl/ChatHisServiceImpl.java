@@ -14,7 +14,11 @@
 
 package org.salt.ai.hub.data.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.salt.ai.hub.data.mapper.ChatHisMapper;
+import org.salt.ai.hub.data.po.ChatHisInfo;
+import org.salt.ai.hub.data.po.ChatInfo;
 import org.salt.ai.hub.data.service.ChatHisService;
 import org.salt.ai.hub.data.vo.ChatHisVo;
 import org.salt.ai.hub.frame.utils.ConvertUtil;
@@ -29,6 +33,14 @@ public class ChatHisServiceImpl implements ChatHisService {
 
     @Override
     public ChatHisVo load(String id) {
+        LambdaQueryWrapper<ChatHisInfo> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(ChatHisInfo::getChatHisId, id);
         return ConvertUtil.convert(chatHisMapper.selectById(id), ChatHisVo.class);
+    }
+
+    @Override
+    public void create(ChatHisVo chatHisVo) {
+        ChatHisInfo chatHisInfo = ConvertUtil.convert(chatHisVo, ChatHisInfo.class);
+        chatHisMapper.insert(chatHisInfo);
     }
 }
