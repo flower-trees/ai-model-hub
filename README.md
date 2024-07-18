@@ -47,7 +47,9 @@ curl --location 'http://127.0.0.1:8080/ai-model-hub/ai/stream/chat' \
 
 ## Architecture diagram
 
-![image](https://github.com/Jindou2018/image/raw/master/ai-model-hub/%E6%9E%B6%E6%9E%842024-07-08-17-54-29.png)
+<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+    <img src="https://github.com/Jindou2018/image/raw/master/ai-model-hub/%E6%9E%B6%E6%9E%842024-07-08-17-54-29.png" alt="Database Image" style="width: 50%;">
+</div>
 
 ### Modules
 - Controller connects to the front-end protocol to achieve the streaming typewriter effect, such as: stream/sse/wc
@@ -141,3 +143,96 @@ ai-model-hub/
 - QWen (aliyun)
 - Moonshot
 - Ollama
+
+## DB Design
+
+### Purpose of Storage
+The main purposes of adding storage to the framework are:
+
+- **Storing Agent Configuration**: The framework can retrieve specific Agent configurations from the database based on the Agent information provided through the frontend. This includes the model provider, the specific model, and any other configurable details such as Agent System Prompt, greetings, etc.
+- **Storing Chat Context**: The framework can store specific questions and answers after each response and automatically construct these into the model request during subsequent questions.
+
+### Design Concept
+The framework implements a minimal design with four tables, as shown in the diagram below:
+
+- **Agent Table**: Stores Agent configurations with specific configurations using JSON fields for easy extension.
+- **Session Table**: Stores information about a conversation, including multiple question-and-answer exchanges, linked to an Agent record.
+- **Chat Table**: Stores individual question-and-answer exchanges, linked to a Session record.
+- **Chat_His Table**: Stores the history of question-and-answer exchanges for retry purposes.
+
+<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+  <img src="https://github.com/Jindou2018/image/raw/master/ai-model-hub/db.png" alt="Database Image" style="width: 50%;">
+</div>
+
+Note: The framework defaults the user field to 1 and can be extended as needed.
+
+### Detailed Table Design
+```
+create table agent_info
+(
+    id                    bigint unsigned auto_increment comment 'ID' primary key,
+    agent_id              varchar(255) not null comment 'Agent ID',
+    user_id               bigint unsigned not null comment 'User ID',
+    name                  varchar(255) not null comment 'Name',
+    details               varchar(512) not null comment 'Description',
+    configs               text null comment 'Configuration Info (JSON)',
+    status                int default 0 null comment '0. Active 1. Deleted',
+    created               timestamp default CURRENT_TIMESTAMP not null comment 'Creation Time',
+    updated               timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'Update Time',
+    check (json_valid(`configs`)),
+    unique key `idx_agent_id` (`agent_id`)
+) comment 'Agent Information' collate = utf8mb4_bin;
+
+create table session_info
+(
+    id              bigint unsigned auto_increment primary key,
+    session_id      varchar(127) not null comment 'Session ID',
+    user_id         bigint unsigned not null comment 'User ID',
+    session_name    varchar(4000) null comment 'Name',
+    status          int default 0 null comment '0. Active 1. Deleted',
+    created         timestamp default CURRENT_TIMESTAMP not null comment 'Creation Time',
+    updated         timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'Update Time',
+    agent_id        varchar(10) default '001' not null comment 'Agent ID',
+    unique key `idx_session_id` (`session_id`)
+) comment 'Session Information' collate = utf8mb4_bin;
+
+create table chat_info
+(
+    id                bigint unsigned auto_increment primary key,
+    session_id        varchar(127) not null comment 'Session ID',
+    chat_id           varchar(127) not null comment 'Chat ID',
+    user_id           bigint unsigned not null comment 'User ID',
+    question          text null comment 'Question',
+    answer            mediumtext null comment 'Answer',
+    status            int default 0 null comment '0. Active 1. Deleted',
+    updated           timestamp null comment 'Update Time',
+    created           timestamp default CURRENT_TIMESTAMP not null comment 'Creation Time',
+    unique key `idx_chat_id` (`chat_id`),
+    index `idx_session_chat_id` (`session_id`, `chat_id`)
+) comment 'Chat Information' collate = utf8mb4_bin;
+
+create table chat_his_info
+(
+    id                bigint unsigned auto_increment primary key,
+    session_id        varchar(127) not null comment 'Session ID',
+    chat_id           varchar(127) not null comment 'Chat ID',
+    chat_his_id       varchar(127) not null comment 'Chat History ID',
+    user_id           bigint unsigned not null comment 'User ID',
+    question          text null comment 'Question',
+    answer            mediumtext null comment 'Answer',
+    status            int default 0 null comment '0. Active 1. Deleted',
+    updated           timestamp null comment 'Update Time',
+    created           timestamp default CURRENT_TIMESTAMP not null comment 'Creation Time',
+    unique key `idx_chat_his_id` (`chat_his_id`),
+    index `idx_session_chat_id` (`session_id`, `chat_id`)
+) comment 'Chat History Information' collate = utf8mb4_bin;
+```
+### Initializing Agent Configurations
+
+```
+INSERT INTO ai_model_hub.agent_info (agent_id, user_id, name, details, configs) VALUES ('1', 1, 'chatgpt', 'chatgpt demo', '{"vendor":"chatgpt","model":"gpt-3.5-turbo"}');
+INSERT INTO ai_model_hub.agent_info (agent_id, user_id, name, details, configs) VALUES ('2', 1, 'doubao', 'doubao demo', '{"vendor":"doubao","model":"ep-20240611104225-2d4ww"}');
+INSERT INTO ai_model_hub.agent_info (agent_id, user_id, name, details, configs) VALUES ('3', 1, 'aliyun', 'aliyun demo', '{"vendor":"aliyun","model":"qwen-max"}');
+INSERT INTO ai_model_hub.agent_info (agent_id, user_id, name, details, configs) VALUES ('4', 1, 'moonshot', 'moonshot demo', '{"vendor":"moonshot","model":"moonshot-v1-8k"}');
+INSERT INTO ai_model_hub.agent_info (agent_id, user_id, name, details, configs) VALUES ('5', 1, 'ollama', 'ollama demo', '{"vendor":"ollama","model":"llama3:8b"}');
+```
