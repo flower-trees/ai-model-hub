@@ -14,6 +14,7 @@
 
 package org.salt.ai.hub.chat.process;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.salt.ai.hub.ai.models.enums.VendorType;
 import org.salt.ai.hub.data.service.AgentService;
@@ -27,6 +28,7 @@ import org.salt.ai.hub.data.vo.SessionVo;
 import org.salt.ai.hub.frame.chat.process.ChatProcess;
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.enums.AiChatCode;
+import org.salt.ai.hub.frame.chat.structs.enums.MessageType;
 import org.salt.ai.hub.frame.chat.structs.enums.RoleType;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatResponse;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -76,10 +79,35 @@ public class SimpleContextProcess implements ChatProcess<String> {
             }
         }
 
+        aiChatDto.setMessages(new ArrayList<>());
+
+        //Add Context
+        List<ChatVo> chatVoList = chatService.queryLastList(aiChatRequest.getSession(), 3);
+        if (!CollectionUtils.isEmpty(chatVoList)) {
+            chatVoList.forEach(chatVo -> {
+                AiChatDto.Message messageUser = new AiChatDto.Message();
+                messageUser.setRole(RoleType.USER.getCode());
+                messageUser.setContent(chatVo.getQuestion());
+                aiChatDto.getMessages().add(messageUser);
+
+                List<AiChatResponse.Message> messages = JsonUtil.fromJson(chatVo.getAnswer(), new TypeReference<>() {});
+                if (!CollectionUtils.isEmpty(messages)) {
+                    AiChatResponse.Message messageMarkdown = messages.stream().filter(message -> MessageType.MARKDOWN.equalsV(message.getType())).findFirst().orElse(null);
+                    if (messageMarkdown != null) {
+                        AiChatDto.Message message = new AiChatDto.Message();
+                        message.setRole(RoleType.ASSISTANT.getCode());
+                        message.setContent((String) messageMarkdown.getContent());
+                        aiChatDto.getMessages().add(message);
+                    }
+                }
+            });
+        }
+
+        //Add user questions
         AiChatDto.Message message = new AiChatDto.Message();
         message.setRole(RoleType.USER.getCode());
         message.setContent(aiChatRequest.getContent());
-        aiChatDto.setMessages(List.of(message));
+        aiChatDto.getMessages().add(message);
 
         aiChatDto.setStream(true);
 
@@ -90,6 +118,7 @@ public class SimpleContextProcess implements ChatProcess<String> {
     public void executeDown(AiChatDto aiChatDto, AiChatResponse aiChatResponse) {
         if (!AiChatCode.ERROR.equalsV(aiChatResponse.getCode())) {
 
+            //Save conversation records
             SessionVo sessionVo = sessionService.load(aiChatDto.getSession());
             if (sessionVo == null) {
                 sessionVo = new SessionVo();

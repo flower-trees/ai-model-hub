@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ChatServiceImpl implements ChatService {
@@ -55,5 +56,14 @@ public class ChatServiceImpl implements ChatService {
         chatInfo.setQuestion(chatVo.getQuestion());
         chatInfo.setAnswer(chatVo.getQuestion());
         chatMapper.update(chatInfo, wrapper);
+    }
+
+    @Override
+    public List<ChatVo> queryLastList(String sessionId, int limit) {
+        LambdaQueryWrapper<ChatInfo> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(ChatInfo::getSessionId, sessionId);
+        wrapper.orderByDesc(ChatInfo::getId);
+        wrapper.last("LIMIT " + limit);
+        return ConvertUtil.convertList(chatMapper.selectList(wrapper), ChatVo.class);
     }
 }

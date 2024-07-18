@@ -16,8 +16,11 @@ package org.salt.ai.hub.data.service;
 
 import org.salt.ai.hub.data.vo.ChatVo;
 
+import java.util.List;
+
 public interface ChatService {
     ChatVo load(String id);
     void create(ChatVo chatVo);
     void update(ChatVo chatVo);
+    List<ChatVo> queryLastList(String sessionId, int limit);
 }
