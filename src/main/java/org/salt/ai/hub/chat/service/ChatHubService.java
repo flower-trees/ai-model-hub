@@ -96,7 +96,7 @@ public class ChatHubService {
                     .next("paramBuilder")
                     .next("agentConfiger")
                     .next("contextBuilder")
-                    .next("LLM")
+                    .next("llm")
                     .next("chatSaver")
                     .buildDynamic();
             flowEngine.execute(flowInstance, aiChatRequest);

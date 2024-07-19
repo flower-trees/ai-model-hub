@@ -28,7 +28,7 @@ import org.salt.function.flow.node.FlowNodeWithReturn;
 import org.salt.function.flow.node.register.NodeIdentity;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@NodeIdentity(nodeId = "LLM")
+@NodeIdentity(nodeId = "llm")
 public class LLM extends FlowNodeWithReturn<AiChatResponse> {
 
     @Autowired
