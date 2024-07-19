@@ -16,6 +16,8 @@ package org.salt.ai.hub.frame.chat.structs.vo;
 
 import lombok.Data;
 
+import java.util.function.Consumer;
+
 @Data
 public class AiChatRequest {
 
@@ -25,4 +27,6 @@ public class AiChatRequest {
 
     private String action;
     private String content;
+
+    private Consumer<AiChatResponse> responder;
 }

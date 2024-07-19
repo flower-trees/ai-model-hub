@@ -43,7 +43,7 @@ public class AiChatDto {
     private String model;
 
     private List<Message> messages;
-    private boolean stream;
+    private boolean stream = true;
 
     @Data
     public static class Message {

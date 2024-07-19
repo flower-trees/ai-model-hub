@@ -22,4 +22,5 @@ import java.util.function.Consumer;
 
 public interface AiChatActuator {
     void pursue(AiChatDto aiChatDto, Consumer<AiChatResponse> responder, BiConsumer<AiChatDto, AiChatResponse> callback);
+    AiChatResponse pursueSyc(AiChatDto aiChatDto, Consumer<AiChatResponse> responder);
 }

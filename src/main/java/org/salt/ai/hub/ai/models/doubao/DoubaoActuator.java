@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -53,6 +54,19 @@ public class DoubaoActuator implements AiChatActuator {
         DoubaoRequest doubaoRequest = convert(aiChatDto);
 
         commonHttpClient.call(chatUrl, JsonUtil.toJson(doubaoRequest), headers, List.of(new DoubaoListener(aiChatDto, responder, callback)));
+    }
+
+    @Override
+    public AiChatResponse pursueSyc(AiChatDto aiChatDto, Consumer<AiChatResponse> responder) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("Authorization", "Bearer " + chatKey);
+
+        DoubaoRequest doubaoRequest = convert(aiChatDto);
+
+        AtomicReference<AiChatResponse> r = new AtomicReference<>();
+        commonHttpClient.call(chatUrl, JsonUtil.toJson(doubaoRequest), headers, List.of(new DoubaoListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
+        return r.get();
     }
 
     public static DoubaoRequest convert(AiChatDto aiChatDto) {

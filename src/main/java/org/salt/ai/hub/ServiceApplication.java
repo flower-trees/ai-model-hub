@@ -2,9 +2,11 @@ package org.salt.ai.hub;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
+import org.salt.function.flow.config.FlowConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -12,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @MapperScan({"org.salt.ai.hub.**.mapper"})
 @EnableAsync
+@Import(FlowConfiguration.class)
 public class ServiceApplication {
     public static void main(String[] args) {
         try {

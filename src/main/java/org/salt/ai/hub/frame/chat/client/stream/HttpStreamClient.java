@@ -126,6 +126,10 @@ public class HttpStreamClient implements InitializingBean {
 
     @Async
     public <T> void call(String url, T body, Map<String, String> headers, List<ListenerStrategy> strategyList) {
+        request(url, body, headers, strategyList);
+    }
+
+    public <T> void request(String url, T body, Map<String, String> headers, List<ListenerStrategy> strategyList) {
 
         log.info("http stream call start");
         strategyList.forEach(ListenerStrategy::onInit);

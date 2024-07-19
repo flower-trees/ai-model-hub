@@ -12,21 +12,14 @@
  * limitations under the License.
  */
 
-package org.salt.ai.hub.frame.utils;
+package org.salt.ai.hub.chat.flow;
 
-import java.util.UUID;
+import org.salt.function.flow.FlowEngine;
+import org.salt.function.flow.config.IFlowInit;
 
-public class IdsUtil {
+public class FlowInit implements IFlowInit {
 
-    public static String newChatId() {
-        return UUID.randomUUID().toString();
-    }
-
-    public static String newSessionId() {
-        return UUID.randomUUID().toString();
-    }
-
-    public static String newFlowId() {
-        return UUID.randomUUID().toString();
+    @Override
+    public void configure(FlowEngine flowEngine) {
     }
 }

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -53,6 +54,19 @@ public class MoonshotActuator implements AiChatActuator {
         MoonshotRequest request = convert(aiChatDto);
 
         commonHttpClient.call(chatUrl, JsonUtil.toJson(request), headers, List.of(new MoonshotListener(aiChatDto, responder, callback)));
+    }
+
+    @Override
+    public AiChatResponse pursueSyc(AiChatDto aiChatDto, Consumer<AiChatResponse> responder) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("Authorization", "Bearer " + chatKey);
+
+        MoonshotRequest request = convert(aiChatDto);
+
+        AtomicReference<AiChatResponse> r = new AtomicReference<>();
+        commonHttpClient.call(chatUrl, JsonUtil.toJson(request), headers, List.of(new MoonshotListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
+        return r.get();
     }
 
     public static MoonshotRequest convert(AiChatDto aiChatDto) {

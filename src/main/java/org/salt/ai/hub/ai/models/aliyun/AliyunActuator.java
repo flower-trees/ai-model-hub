@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -54,6 +55,20 @@ public class AliyunActuator implements AiChatActuator {
         AliyunRequest aliyunRequest = convert(aiChatDto);
 
         commonHttpClient.call(chatUrl, JsonUtil.toJson(aliyunRequest), headers, List.of(new AliyunListener(aiChatDto, responder, callback)));
+    }
+
+    @Override
+    public AiChatResponse pursueSyc(AiChatDto aiChatDto, Consumer<AiChatResponse> responder) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("Authorization", "Bearer " + chatKey);
+        headers.put("X-DashScope-SSE", "enable");
+
+        AliyunRequest aliyunRequest = convert(aiChatDto);
+
+        AtomicReference<AiChatResponse> r = new AtomicReference<>();
+        commonHttpClient.request(chatUrl, JsonUtil.toJson(aliyunRequest), headers, List.of(new AliyunListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
+        return r.get();
     }
 
     public static AliyunRequest convert(AiChatDto aiChatDto) {

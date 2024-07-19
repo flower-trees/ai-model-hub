@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.HashMap;
@@ -40,7 +41,8 @@ public class TheadConfig {
     private int keepAlive;
 
     @Bean
-    @ConditionalOnMissingBean(name = "globalThreadPool")
+    @Primary
+    @ConditionalOnMissingBean(name = "eventThreadPool")
     public ThreadPoolTaskExecutor eventThreadPool() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(coreSize);
@@ -48,7 +50,7 @@ public class TheadConfig {
         threadPoolTaskExecutor.setQueueCapacity(queueCapacity);
         threadPoolTaskExecutor.setKeepAliveSeconds(keepAlive);
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        threadPoolTaskExecutor.setThreadNamePrefix("globalThreadPool-");
+        threadPoolTaskExecutor.setThreadNamePrefix("eventThreadPool-");
         threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
         threadPoolTaskExecutor.setTaskDecorator(runnable -> {
             Map<String, Object> map = new HashMap<>(ThreadUtil.getAll());
