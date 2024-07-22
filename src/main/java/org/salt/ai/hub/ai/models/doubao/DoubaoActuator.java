@@ -65,7 +65,7 @@ public class DoubaoActuator implements AiChatActuator {
         DoubaoRequest doubaoRequest = convert(aiChatDto);
 
         AtomicReference<AiChatResponse> r = new AtomicReference<>();
-        commonHttpClient.call(chatUrl, JsonUtil.toJson(doubaoRequest), headers, List.of(new DoubaoListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
+        commonHttpClient.request(chatUrl, JsonUtil.toJson(doubaoRequest), headers, List.of(new DoubaoListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
         return r.get();
     }
 

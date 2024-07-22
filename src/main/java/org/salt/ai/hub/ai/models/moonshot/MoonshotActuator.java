@@ -65,7 +65,7 @@ public class MoonshotActuator implements AiChatActuator {
         MoonshotRequest request = convert(aiChatDto);
 
         AtomicReference<AiChatResponse> r = new AtomicReference<>();
-        commonHttpClient.call(chatUrl, JsonUtil.toJson(request), headers, List.of(new MoonshotListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
+        commonHttpClient.request(chatUrl, JsonUtil.toJson(request), headers, List.of(new MoonshotListener(aiChatDto, responder, (aiChatDto1, aiChatResponse) -> { r.set(aiChatResponse); })));
         return r.get();
     }
 

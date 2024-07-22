@@ -23,7 +23,6 @@ import org.salt.ai.hub.ai.models.enums.VendorType;
 import org.salt.ai.hub.ai.models.moonshot.MoonshotActuator;
 import org.salt.ai.hub.ai.models.ollama.OllamaActuator;
 import org.salt.ai.hub.chat.process.SimpleContextProcess;
-import org.salt.ai.hub.frame.chat.front.stream.StreamResponse;
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.enums.AiChatCode;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
