@@ -27,6 +27,7 @@ public class AiChatRequest {
 
     private String action;
     private String content;
+    private String url;
 
     private Consumer<AiChatResponse> responder;
 }

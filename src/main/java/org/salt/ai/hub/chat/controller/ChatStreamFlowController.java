@@ -24,10 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 @Controller
@@ -40,7 +37,7 @@ public class ChatStreamFlowController {
 
     @PostMapping(value = "/chat/flow", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<ResponseBodyEmitter> command(@RequestBody AiChatRequest aiChatRequest) {
+    public ResponseEntity<ResponseBodyEmitter> flow(@RequestBody AiChatRequest aiChatRequest) {
 
         ResponseBodyEmitter emitter = new ResponseBodyEmitter(300000L);
 
@@ -49,7 +46,28 @@ public class ChatStreamFlowController {
                 StreamResponse.responder(aiChatRequest, aiChatResponse, emitter);
             });
         } catch (Exception e) {
-            log.error("ai models hub fail, e:", e);
+            log.error("ai models flow fail, e:", e);
+            StreamResponse.responseFail(aiChatRequest, emitter, e);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_EVENT_STREAM);
+
+        return new ResponseEntity<>(emitter, headers, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/chat/flow/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<ResponseBodyEmitter> flowById(@PathVariable String id, @RequestBody AiChatRequest aiChatRequest) {
+
+        ResponseBodyEmitter emitter = new ResponseBodyEmitter(300000L);
+
+        try {
+            chatHubService.flowById(id, aiChatRequest, aiChatResponse -> {
+                StreamResponse.responder(aiChatRequest, aiChatResponse, emitter);
+            });
+        } catch (Exception e) {
+            log.error("ai models flow by id fail, e:", e);
             StreamResponse.responseFail(aiChatRequest, emitter, e);
         }
 

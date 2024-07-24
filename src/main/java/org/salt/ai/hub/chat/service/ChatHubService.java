@@ -107,4 +107,23 @@ public class ChatHubService {
             responder.accept(aiChatResponse);
         }
     }
+
+    @Async
+    public void flowById(String id, AiChatRequest aiChatRequest, Consumer<AiChatResponse> responder) {
+
+        if (StringUtils.isBlank(aiChatRequest.getSession())) aiChatRequest.setSession(IdsUtil.newSessionId());
+        if (StringUtils.isBlank(aiChatRequest.getId())) aiChatRequest.setId(IdsUtil.newChatId());
+
+        aiChatRequest.setResponder(responder);
+
+        try {
+            flowEngine.execute(id, aiChatRequest);
+        } catch (Exception e) {
+            log.error("ai models flow by id fail, e:", e);
+            AiChatResponse aiChatResponse = new AiChatResponse();
+            aiChatResponse.setCode(AiChatCode.ERROR.getCode());
+            aiChatResponse.setMessage(AiChatCode.ERROR.getMessage());
+            responder.accept(aiChatResponse);
+        }
+    }
 }

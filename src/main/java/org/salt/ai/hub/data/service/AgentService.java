@@ -16,6 +16,9 @@ package org.salt.ai.hub.data.service;
 
 import org.salt.ai.hub.data.vo.AgentVo;
 
+import java.util.List;
+
 public interface AgentService {
     AgentVo load(String id);
+    List<AgentVo> list(AgentVo agentVo);
 }

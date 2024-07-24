@@ -29,6 +29,7 @@ import org.salt.function.flow.node.register.NodeIdentity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 @NodeIdentity(nodeId = "contextBuilder")
@@ -47,20 +48,23 @@ public class ContextBuilder extends FlowNodeWithReturn<AiChatDto> {
         //Query and Add Context
         List<ChatVo> chatVoList = chatService.queryLastList(aiChatRequest.getSession(), 3);
         if (!CollectionUtils.isEmpty(chatVoList)) {
+            Collections.reverse(chatVoList);
             chatVoList.forEach(chatVo -> {
-                AiChatDto.Message messageUser = new AiChatDto.Message();
-                messageUser.setRole(RoleType.USER.getCode());
-                messageUser.setContent(chatVo.getQuestion());
-                aiChatDto.getMessages().add(messageUser);
+                if (!chatVo.getChatId().equals(aiChatDto.getId())) {
+                    AiChatDto.Message messageUser = new AiChatDto.Message();
+                    messageUser.setRole(RoleType.USER.getCode());
+                    messageUser.setContent(chatVo.getQuestion());
+                    aiChatDto.getMessages().add(messageUser);
 
-                List<AiChatResponse.Message> messages = JsonUtil.fromJson(chatVo.getAnswer(), new TypeReference<>() {});
-                if (!CollectionUtils.isEmpty(messages)) {
-                    AiChatResponse.Message messageMarkdown = messages.stream().filter(message -> MessageType.MARKDOWN.equalsV(message.getType())).findFirst().orElse(null);
-                    if (messageMarkdown != null) {
-                        AiChatDto.Message message = new AiChatDto.Message();
-                        message.setRole(RoleType.ASSISTANT.getCode());
-                        message.setContent((String) messageMarkdown.getContent());
-                        aiChatDto.getMessages().add(message);
+                    List<AiChatResponse.Message> messages = JsonUtil.fromJson(chatVo.getAnswer(), new TypeReference<>() {});
+                    if (!CollectionUtils.isEmpty(messages)) {
+                        AiChatResponse.Message messageMarkdown = messages.stream().filter(message -> MessageType.MARKDOWN.equalsV(message.getType())).findFirst().orElse(null);
+                        if (messageMarkdown != null) {
+                            AiChatDto.Message message = new AiChatDto.Message();
+                            message.setRole(RoleType.ASSISTANT.getCode());
+                            message.setContent((String) messageMarkdown.getContent());
+                            aiChatDto.getMessages().add(message);
+                        }
                     }
                 }
             });

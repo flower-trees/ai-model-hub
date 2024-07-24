@@ -54,7 +54,7 @@ public class ChatServiceImpl implements ChatService {
         wrapper.eq(ChatInfo::getChatId, chatVo.getChatId());
         ChatInfo chatInfo = new ChatInfo();
         chatInfo.setQuestion(chatVo.getQuestion());
-        chatInfo.setAnswer(chatVo.getQuestion());
+        chatInfo.setAnswer(chatVo.getAnswer());
         chatMapper.update(chatInfo, wrapper);
     }
 

@@ -1,0 +1,235 @@
+<!--
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align items to the left */
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        #agentArea {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        #agentArea h3 {
+            margin: 0;
+            margin-right: 10px;
+        }
+        #chat {
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 80%;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+            margin-bottom: 10px;
+        }
+        #inputArea, #agentSelect {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align items to the left */
+            margin-bottom: 10px;
+        }
+        #inputArea input, #inputArea button, #agentSelect {
+            width: 100%; /* Consistent width for input and select */
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+            max-width: 500px;
+        }
+        #inputRow {
+            display: flex;
+            width: 100%;
+            justify-content: flex-start; /* Align items to the left */
+        }
+        #inputRow input {
+            flex-grow: 1;
+            max-width: 80%;
+        }
+        #inputRow button {
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            margin-left: 10px;
+            width: auto; /* Reduce button length */
+            padding: 10px 20px; /* Adjust padding for the button */
+        }
+    </style>
+</head>
+<body>
+<div id="agentArea">
+    <h3>Agent</h3>
+    <select id="agentSelect"></select>
+</div>
+<div id="chat"></div>
+<div id="inputArea">
+    <div id="inputRow">
+        <input type="text" id="questionInput" placeholder="Enter your question..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+<script>
+    let chatId = null;
+    let sessionId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchAgentList();
+        document.getElementById('questionInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    });
+
+    async function fetchAgentList() {
+        const response = await fetch('http://127.0.0.1:8080/ai-model-hub/agent/list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body:'{}'
+        });
+
+        const agents = await response.json();
+        const select = document.getElementById('agentSelect');
+        agents.forEach(agent => {
+            const option = document.createElement('option');
+            option.value = agent.id;
+            option.text = agent.name;
+            select.add(option);
+        });
+    }
+
+    async function fetchStream(question) {
+        console.log('Starting fetch request...');
+
+        const agent = document.getElementById('agentSelect').value;
+
+        const body = {
+            agent: agent,
+            content: question
+        };
+
+        if (chatId && sessionId) {
+            // body.id = chatId;
+            body.session = sessionId;
+        }
+
+        const response = await fetch('http://127.0.0.1:8080/ai-model-hub/ai/stream/chat/flow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        console.log('Fetch request completed. Response:', response);
+
+        if (response.status !== 200) {
+            await displayTypingEffect('Sorry, the model encountered an error.\n');
+            return;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+        let { value, done } = await reader.read();
+
+        const chatDiv = document.getElementById('chat');
+        chatDiv.textContent += `Assistant: `;
+
+        let tempTextContent = chatDiv.textContent;
+
+        while (!done) {
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+
+            let lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const message = line.slice(6);  // 去掉 'data: ' 前缀
+                    try {
+                        const json = JSON.parse(message);
+                        console.log('Parsed JSON:', json);
+
+                        if (json.code === 'message' && json.message === 'success') {
+                            // 存储id和session
+                            if (json.id) chatId = json.id;
+                            if (json.session) sessionId = json.session;
+
+                            for (const msg of json.messages) {
+                                console.log('Message content:', msg.content);
+                                await displayTypingEffect(msg.content);
+                            }
+                        } else if (json.code === 'error') {
+                            chatDiv.textContent = tempTextContent;  // Clear previous output
+                            await displayTypingEffect('Sorry, the model encountered an error.\n');
+                            return;
+                        } else {
+                            console.log('Skipping message with code:', json.code);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing message:', message, e);
+                    }
+                }
+            }
+
+            ({ value, done } = await reader.read());
+        }
+
+        chatDiv.textContent += `\n\n\n`;
+
+        console.log('Stream reading completed.');
+    }
+
+    async function displayTypingEffect(content) {
+        console.log('Displaying content:', content);
+        const chatDiv = document.getElementById('chat');
+        for (let i = 0; i < content.length; i++) {
+            chatDiv.textContent += content[i];
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('questionInput');
+        const question = input.value.trim();
+        if (question) {
+            const chatDiv = document.getElementById('chat');
+            chatDiv.textContent += `You: ${question}\n\n`;
+            fetchStream(question);
+            input.value = '';
+        }
+    }
+</script>
+</body>
+</html>

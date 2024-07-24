@@ -18,10 +18,9 @@ import org.salt.ai.hub.data.service.AgentService;
 import org.salt.ai.hub.data.vo.AgentVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/agent")
@@ -34,5 +33,11 @@ public class AgentController {
     @ResponseBody
     public AgentVo load(@PathVariable String id) {
         return agentService.load(id);
+    }
+
+    @PostMapping("/list")
+    @ResponseBody
+    public List<AgentVo> list(@RequestBody AgentVo agentVo) {
+        return agentService.list(agentVo);
     }
 }

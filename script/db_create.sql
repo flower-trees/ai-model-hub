@@ -36,7 +36,7 @@ create table session_info
     status          int          default 0                 null comment '0.正常 1.删除',
     created         timestamp       default CURRENT_TIMESTAMP not null comment '创建时间',
     updated         timestamp       default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    agent_id        varchar(10)  default '001'             not null comment 'Agent ID',
+    agent_id        varchar(255)  default '00000'             not null comment 'Agent ID',
     unique key `idx_session_id` (`session_id`)
 ) comment '对话信息' collate = utf8mb4_bin;
 

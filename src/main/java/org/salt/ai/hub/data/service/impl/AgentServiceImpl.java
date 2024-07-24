@@ -14,12 +14,17 @@
 
 package org.salt.ai.hub.data.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.salt.ai.hub.data.mapper.AgentMapper;
+import org.salt.ai.hub.data.po.AgentInfo;
 import org.salt.ai.hub.data.service.AgentService;
 import org.salt.ai.hub.data.vo.AgentVo;
 import org.salt.ai.hub.frame.utils.ConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AgentServiceImpl implements AgentService {
@@ -30,5 +35,13 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public AgentVo load(String id) {
         return ConvertUtil.convert(agentMapper.selectById(id), AgentVo.class);
+    }
+
+    @Override
+    public List<AgentVo> list(AgentVo agentVo) {
+        LambdaQueryWrapper<AgentInfo> wrapper = Wrappers.lambdaQuery();
+        wrapper.orderByAsc(AgentInfo::getId);
+        wrapper.last("LIMIT " + 50);
+        return ConvertUtil.convertList(agentMapper.selectList(wrapper), AgentVo.class);
     }
 }

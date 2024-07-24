@@ -15,6 +15,7 @@
 package org.salt.ai.hub.chat.flow.nodes.llm;
 
 import org.salt.ai.hub.ai.models.chatgpt.ChatGPTActuator;
+import org.salt.ai.hub.ai.models.enums.VendorType;
 import org.salt.ai.hub.frame.chat.structs.dto.AiChatDto;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatRequest;
 import org.salt.ai.hub.frame.chat.structs.vo.AiChatResponse;
@@ -35,6 +36,9 @@ public class ChatGPTLLM extends FlowNodeWithReturn<AiChatResponse> {
         //Init param
         AiChatRequest aiChatRequest = (AiChatRequest) iContextBus.getParam();
         AiChatDto aiChatDto = (AiChatDto) iContextBus.getTransmitInfo(AiChatDto.class.getName());
+
+        aiChatDto.setVendor(VendorType.CHATGPT.getCode());
+        aiChatDto.setModel("gpt-3.5-turbo");
 
         return chatGPTActuator.pursueSyc(aiChatDto, aiChatRequest.getResponder());
     }

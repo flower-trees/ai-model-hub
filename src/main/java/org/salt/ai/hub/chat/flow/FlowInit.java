@@ -16,10 +16,21 @@ package org.salt.ai.hub.chat.flow;
 
 import org.salt.function.flow.FlowEngine;
 import org.salt.function.flow.config.IFlowInit;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FlowInit implements IFlowInit {
 
     @Override
     public void configure(FlowEngine flowEngine) {
+
+        flowEngine.builder()
+                .id("analyze_webpage_jsoup")
+                .next("paramBuilder")
+                .next("jsoupGetUrl")
+                .next("contextBuilder")
+                .next("chatGPTLLM")
+                .next("chatSaver")
+                .build();
     }
 }
